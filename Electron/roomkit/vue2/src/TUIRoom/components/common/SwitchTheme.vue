@@ -6,7 +6,7 @@
 -->
 <template>
   <icon-button
-    v-if="visible && switchThemeConfig.visible"
+    v-if="false"
     :title="t('Switch Theme')"
     :layout="IconButtonLayout.HORIZONTAL"
     :icon="SwitchThemeIcon"
