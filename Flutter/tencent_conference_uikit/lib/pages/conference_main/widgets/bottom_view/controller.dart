@@ -6,6 +6,9 @@ import 'package:tencent_conference_uikit/common/index.dart';
 import 'package:tencent_conference_uikit/manager/rtc_engine_manager.dart';
 import 'package:tencent_conference_uikit/pages/conference_main/index.dart';
 import 'package:rtc_room_engine/api/room/tui_room_define.dart';
+import 'package:tencent_conference_uikit/pages/conference_main/widgets/float_window/index.dart';
+
+import '../../../../common/store/float_window_store.dart';
 
 class BottomViewController extends GetxController {
   BottomViewController();
@@ -18,9 +21,12 @@ class BottomViewController extends GetxController {
   final isRequestingTakeSeat = false.obs;
   final isRoomNeedTakeSeat = false.obs;
 
+  final raiseHandApplicationCount = ''.obs;
+
   late RoomEngineManager _engineManager;
   late RoomStore _store;
   late String _takeSeatRequestId;
+  late Worker _worker;
 
   final conferenceMainController = Get.find<ConferenceMainController>();
 
@@ -32,6 +38,20 @@ class BottomViewController extends GetxController {
     _takeSeatRequestId = '';
     isRoomNeedTakeSeat.value = _store.roomInfo.isSeatEnabled == true &&
         _store.roomInfo.seatMode == TUISeatMode.applyToTake;
+    _worker = ever(RoomStore.to.inviteSeatList, (_) {
+      if (RoomStore.to.inviteSeatList.isEmpty) {
+        raiseHandApplicationCount.value = '';
+        return;
+      }
+      raiseHandApplicationCount.value =
+          RoomStore.to.inviteSeatList.length.toString();
+    });
+  }
+
+  @override
+  void onClose() {
+    _worker.dispose();
+    super.onClose();
   }
 
   void muteAudioAction() {
@@ -230,6 +250,14 @@ class BottomViewController extends GetxController {
       conferenceMainController.cancelHideTimer();
     } else {
       conferenceMainController.resetHideTimer();
+    }
+  }
+
+  Future<void> enableFloatWindow() async {
+    Get.put<FloatWindowStore>(FloatWindowStore(), permanent: true);
+    bool success = await FloatWindowStore.to.showFloatWindow();
+    if (success) {
+      Get.back();
     }
   }
 }
