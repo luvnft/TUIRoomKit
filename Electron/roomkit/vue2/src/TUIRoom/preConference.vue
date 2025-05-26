@@ -29,7 +29,12 @@
       @enter-room="handleEnterRoom"
     />
     <div class="pre-home-control" v-else>
-      <Logo v-show="props.isShowLogo" class="logo" />
+      <img
+      v-show="props.isShowLogo"
+      class="logo"
+      src="https://i.imgur.com/DLD2ZW7.png"
+      alt="Custom Logo"
+    />
       <div class="pre-home-control-container">
         <room-home-control
           ref="roomControlRef"
